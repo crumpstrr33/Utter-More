@@ -1,8 +1,8 @@
 from itertools import product, chain
-import sys
+from csv import writer
+from sys import argv
+from os import path
 import re
-import os
-import csv
 
 
 class UtterMore:
@@ -140,10 +140,10 @@ class UtterMore:
         written_as = written_as or saved_as
 
         # Create full path name
-        full_path = os.path.join(path, name + '.' + saved_as)
+        full_path = path.join(path, name + '.' + saved_as)
 
         # Check if file already exists
-        if os.path.exists(full_path) and not force:
+        if path.exists(full_path) and not force:
             raise Exception('File already exists and force=False. ' +
                             'Set force=True to overwrite file.')
         # Check if unsupported file type
@@ -156,7 +156,7 @@ class UtterMore:
                 for utterance in chain.from_iterable(self.utterances):
                     f.write('{}\n'.format(utterance.strip()))
             elif written_as == 'csv':
-                csv_writer = csv.writer(f)
+                csv_writer = writer(f)
                 csv_writer.writerow(chain.from_iterable(self.utterances))
 
     def save_for_alexa(self, path, name, force=False):
@@ -175,7 +175,7 @@ class UtterMore:
 
 
 if __name__ == "__main__":
-    utter_more = UtterMore(*sys.argv[1:])
+    utter_more = UtterMore(*argv[1:])
     utter_more.iter_build_utterances()
     #utter_more.save_for_alexa('', 'tmp', True)
 
