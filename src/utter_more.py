@@ -2,6 +2,7 @@ from itertools import product, chain
 import sys
 import re
 import os
+import csv
 
 
 class UtterMore:
@@ -115,44 +116,46 @@ class UtterMore:
         """
         self.utterance_templates.append(utterance_template)
 
-    def save_utterances(self, path, name, ftype, force=False, ftype_or=None):
+    def save_utterances(self, path, name, saved_as, force=False, written_as=None):
         """
         Saves the current utterances to a file.
 
         Parameters:
         path - Path to the directory in which to save the file
         name - Name of the to be saved file
-        ftype - File type (txt)
+        saved_as - File type, file extension to save as (e.g. 'txt' or 'csv')
         force - (default False) If True, will automatically make the file. If a
                 file of the same name exists, it will overwrite it. If False,
                 it will throw an error of the file already exists.
-        ftype_or - (default None) File type override; gives the ability to save
-                   with a specific file extentsion but the actually writing
-                   process is done as a different file type. For example, Alexa
-                   needs a CSV that is new line-separated, not comma-separated
-                   for some reason so if ftype_or='txt' but ftype='csv', it
-                   will save it as a csv file but will write it as a text file.
+        written_as - (default None) What type of file to be written as. If no
+                     argument is given, then it will be written as what it is
+                     saved as. For example, if we put saved_as='txt' and
+                     written_as='csv', then the save file will have a .txt
+                     extension but will be written as comma-separated values
+                     like a CSV. Amazon's Alexa requires a CSV file but with
+                     line separated values, so self.save_for_alexa uses
+                     saved_as='csv' and written_as='txt'
         """
         # Allows saving with one file extension but as another
-        ftype_or = ftype_or or ftype
+        written_as = written_as or saved_as
 
         # Create full path name
-        full_path = os.path.join(path, name + '.' + ftype)
+        full_path = os.path.join(path, name + '.' + saved_as)
 
         # Check if file already exists
         if os.path.exists(full_path) and not force:
             raise Exception('File already exists and force=False. ' +
                             'Set force=True to overwrite file.')
         # Check if unsupported file type
-        if ftype not in ['csv', 'txt']:
+        if saved_as not in ['csv', 'txt']:
             raise Exception("File type '{}' is not supported.".format(ftype_or))
 
         # Open file and add every utterance
         with open(full_path, 'w') as f:
-            if ftype_or == 'txt':
+            if written_as == 'txt':
                 for utterance in chain.from_iterable(self.utterances):
                     f.write('{}\n'.format(utterance.strip()))
-            elif ftype_or == 'csv':
+            elif written_as == 'csv':
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(chain.from_iterable(self.utterances))
 
@@ -168,13 +171,13 @@ class UtterMore:
                 file of the same name exists, it will overwrite it. If False,
                 it will throw an error of the file already exists.
         """
-        self.save_utterances(path, name, 'csv', force=force, ftype_or='txt')
+        self.save_utterances(path, name, 'csv', force=force, written_as='txt')
 
 
 if __name__ == "__main__":
     utter_more = UtterMore(*sys.argv[1:])
     utter_more.iter_build_utterances()
-    utter_more.save_for_alexa('', 'tmp', True)
+    #utter_more.save_for_alexa('', 'tmp', True)
 
     from pprint import pprint
     pprint(utter_more.utterances)
