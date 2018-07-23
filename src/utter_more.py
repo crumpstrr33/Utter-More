@@ -85,7 +85,7 @@ class UtterMore:
         # Below turns "What (is|are) (that|those) {{things}} {place}?" into:
         #             "What {} {} {} {{place}}?"
         # Finds the above keywords and replaces with {} for formatting
-        template = re.sub(r'{{[^{}]*}}|\([^(){}]*\)', '{}', utterance_template)
+        template = re.sub(r'{{[^{}]*}}|\([^()]*\)', '{}', utterance_template)
         # Turns {...} into {{...}} for literalize the curlies
         template = re.sub(r'\{[\w]+\}', lambda x: '{' + x.group(0) + '}', template)
 
