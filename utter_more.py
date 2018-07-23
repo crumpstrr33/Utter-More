@@ -153,7 +153,7 @@ class UtterMore:
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(chain.from_iterable(self.utterances))
 
-    def save_to_upload_for_alexa(self, path, name, force=False):
+    def save_for_alexa(self, path, name, force=False):
         """
         Creates CSV in the format that Alexa needs (instead of comma-separated,
         it's new line-separated otherwise it won't upload correctly).
@@ -170,10 +170,8 @@ class UtterMore:
 
 if __name__ == "__main__":
     utter_more = UtterMore(*sys.argv[1:])
-    utter_more.add_utterance_template("This (one|guy|dude) (too|also), {thanks}!")
     utter_more.iter_build_utterances()
-
-    utter_more.save_to_upload_for_alexa('', 'tmp', True)
+    utter_more.save_for_alexa('', 'tmp', True)
 
     from pprint import pprint
     pprint(utter_more.utterances)
