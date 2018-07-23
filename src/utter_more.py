@@ -143,6 +143,9 @@ class UtterMore:
         if os.path.exists(full_path) and not force:
             raise Exception('File already exists and force=False. ' +
                             'Set force=True to overwrite file.')
+        # Check if unsupported file type
+        if ftype not in ['csv', 'txt']:
+            raise Exception("File type '{}' is not supported.".format(ftype_or))
 
         # Open file and add every utterance
         with open(full_path, 'w') as f:
