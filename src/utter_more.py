@@ -116,12 +116,12 @@ class UtterMore:
         """
         self.utterance_templates.append(utterance_template)
 
-    def save_utterances(self, path, name, saved_as, force=False, written_as=None):
+    def save_utterances(self, fpath, name, saved_as, force=False, written_as=None):
         """
         Saves the current utterances to a file.
 
         Parameters:
-        path - Path to the directory in which to save the file
+        fpath - Path to the directory in which to save the file
         name - Name of the to be saved file
         saved_as - File type, file extension to save as (e.g. 'txt' or 'csv')
         force - (default False) If True, will automatically make the file. If a
@@ -140,7 +140,7 @@ class UtterMore:
         written_as = written_as or saved_as
 
         # Create full path name
-        full_path = path.join(path, name + '.' + saved_as)
+        full_path = path.join(fpath, name + '.' + saved_as)
 
         # Check if file already exists
         if path.exists(full_path) and not force:
@@ -159,25 +159,42 @@ class UtterMore:
                 csv_writer = writer(f)
                 csv_writer.writerow(chain.from_iterable(self.utterances))
 
-    def save_for_alexa(self, path, name, force=False):
+    def save_for_alexa(self, fpath, name, force=False):
         """
         Creates CSV in the format that Alexa needs (instead of comma-separated,
         it's new line-separated otherwise it won't upload correctly).
 
         Parameters:
-        path - Path to the directory in which to save the file
+        fpath - Path to the directory in which to save the file
         name - Name of the to be saved file
         force - (default False) If True, will automatically make the file. If a
                 file of the same name exists, it will overwrite it. If False,
                 it will throw an error of the file already exists.
         """
-        self.save_utterances(path, name, 'csv', force=force, written_as='txt')
+        self.save_utterances(fpath, name, 'csv', force=force, written_as='txt')
+
+    def read_utterance_templates_from_file(self, fpath, sep='\n'):
+        """
+        Reads in utterance templates from a file.
+
+        Paramters:
+        fpath - Path to the file with the templates
+        sep - (default '\n') The separator for each template. If each template
+              is on a new line, then use default.
+        """
+        # Read in data
+        with open(fpath, 'r') as f:
+            file_data = f.read()
+
+        for utterance_template in file_data.split(sep):
+            # Skip if an empty string
+            if utterance_template:
+                self.add_utterance_template(utterance_template)
 
 
 if __name__ == "__main__":
     utter_more = UtterMore(*argv[1:])
     utter_more.iter_build_utterances()
-    #utter_more.save_for_alexa('', 'tmp', True)
 
     from pprint import pprint
     pprint(utter_more.utterances)
