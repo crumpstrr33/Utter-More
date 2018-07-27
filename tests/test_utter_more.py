@@ -22,6 +22,13 @@ OC_ANS = ['bemiden', 'bemidd', 'bedleen', 'bedled',
           'ginmiden', 'ginmidd', 'gindleen', 'gindled',
           'ningmiden', 'ningmidd', 'ningdleen', 'ningdled']
 
+COND_OR_CURLY = '(be^1|gin^2|ning)(mid*1|dle*2)(en*1|d*2)'
+COC_ANS = ['bemiden', 'bemidd', 'bedleen', 'ginmidd', 'gindleen',
+           'gindled', 'ningmiden', 'ningmidd', 'ningdleen', 'ningdled']
+
+COND_AND_CURLY = '(be*1|gin*2|ning)(mid^1|dle^2)(en^1|d^2)'
+CAC_ANS = ['bemiden', 'gindled']
+
 
 @pytest.fixture()
 def local_um():
@@ -38,7 +45,9 @@ def global_um():
 @pytest.mark.parametrize('template, utterances', [
     (DOUBLE_CURLY, DC_ANS),
     (SINGLE_CURLY, SC_ANS),
-    (OR_CURLY, OC_ANS)
+    (OR_CURLY, OC_ANS),
+    (COND_OR_CURLY, COC_ANS),
+    (COND_AND_CURLY, CAC_ANS)
 ])
 def test_build_utterances(local_um, template, utterances):
     """

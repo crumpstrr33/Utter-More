@@ -16,20 +16,21 @@ class UtterMore:
 
         There are two ways to format a template and they are as follows:
 
-        (a|b|c|...) - This place a OR b OR c OR etc. in its place
-        {{slot}} - This will place the slot {slot} or nothing in its place.
+        (a*1|b*2) (c^1|d^2) - [CONDITIONAL OR] The * defines a master with a tag
+            of whatever follows the * while the ^ defines a follower of the tag
+            of whatever follows the ^. So utterances with a word tagged with
+            ^sample will only be returned if the utterance also has a word
+            tagged with *sample. The above will display 'a c' OR 'b d'.
 
-        For example, the template "What (is|are) (that|those) {{things}}?" will
-        return the following utterances:
+        For example, the template
+        
+        "What (is*singular|are*plural) (that^singular|those^plural) {{things}}"
+        will return the following utterances:
 
-                    ['What is that {things}?',
-                    'What is that ?',
-                    'What is those {things}?',
-                    'What is those ?',
-                    'What are that {things}?',
-                    'What are that ?',
-                    'What are those {things}?',
-                    'What are those ?']
+                    ['What is that {things}',
+                    'What is that',
+                    'What are those {things}',
+                    'What are those']
 
         An arbitrary number of utterance templates can be passed to the class.
         Or utterance templates can be passed as a solo argument to
@@ -56,25 +57,93 @@ class UtterMore:
             self.utterances.append(self.build_utterances(utterance_template))
 
     @staticmethod
-    def build_utterances(utterance_template):
+    def _order_curlies(*curlies):
+        """
+        Orders the curlies in a list based on where they should appear in the
+        template and prepares it for adding to template
+        """
+        # Create dictionary mapping where the above occur to the occurance
+        all_curlies = chain.from_iterable(curlies)
+        indexed_curlies = {curly.start(0): curly.group(0) for curly in all_curlies}
+
+        ordered_curlies = []
+        for ind in sorted(indexed_curlies.keys()):
+            curly = indexed_curlies[ind]
+            # Double curlies are either single curlies or nothing
+            if curly.startswith('{{'):
+                ordered_curlies.append([curly[1:-1], ''])
+            # These are a choice of the words separated by the pip
+            elif curly.startswith('('):
+                ordered_curlies.append(curly[1:-1].split('|'))
+
+        return ordered_curlies
+
+    @staticmethod
+    def _fill_in_template(template, ordered_curlies):
+        """
+        Given a template to fill and an ordered list of curlies created by
+        self._order_curlies to fill it, it does just that.
+        """
+        # Fill in template with every combination
+        utterances = []
+        for edit in product(*ordered_curlies):
+            skip_edit = False
+
+            # First get the masters (OR keywords with the *)
+            masters = set()
+            for kw in edit:
+                # Will be empty list if find no * followed by the tag
+                found_master = re.findall(r'\*(\w+)', kw)
+                # If not empty list, add that to masters set
+                if found_master:
+                    masters.add(found_master[0])
+
+            # Find the followers and see if they match up with the masters
+            for kw in edit:
+                # Same idea as with finding the masters/a master
+                found_follower = re.findall(r'\^(\w+)', kw)
+                # Don't add this edit to utterances if it has a follower that
+                # isn't in the masters set
+                if found_follower and found_follower[0] not in masters:
+                   skip_edit = True
+                   continue
+
+            # If all good, add it!
+            if not skip_edit:
+                # Remove the OR conditional stuff to clean it
+                cleaned_edit = [x.split('*')[0].split('^')[0] for x in edit]
+                # The join/split nonsense removes excess whitespace
+                utterances.append(' '.join(template.format(*cleaned_edit).split()))
+
+        return utterances
+
+
+    def build_utterances(self, utterance_template):
         """
         Returns the made utterances given an utterance template. It supports
         the following substitutions:
         
-        (a|b|c|...) - This place a OR b OR c OR etc. in its place
-        {{slot}} - This will place the slot {slot} or nothing in its place.
+        (a|b|c|...) - [OR] This wil place a OR b OR c OR etc. in its place
+        {{slot}} - [OPTIONAL SLOT] This will place the slot {slot} or nothing
+            in its place.
+        (a*1|b*2) (c^1|d^2) - [CONDITIONAL OR] The * defines a master with a tag
+            of whatever follows the * while the ^ defines a follower of the tag
+            of whatever follows the ^. So utterances with a word tagged with
+            ^sample will only be returned if the utterance also has a word
+            tagged with *sample. The above will display 'a c' OR 'b d'. If we
+            have multiple masters, then the follower(s) will appear if at least
+            one master is present. And alternatively, you can treat multiple 
+            followers as a CONDITIONAL AND.
 
-        For example, the template "What (is|are) (that|those) {{things}}?" will
-        return the following utterances:
+        For example, the template
+        
+        "What (is*singular|are*plural) (that^singular|those^plural) {{things}}"
+        will return the following utterances:
 
-                    ['What is that {things}?',
-                    'What is that ?',
-                    'What is those {things}?',
-                    'What is those ?',
-                    'What are that {things}?',
-                    'What are that ?',
-                    'What are those {things}?',
-                    'What are those ?']
+                    ['What is that {things}',
+                    'What is that',
+                    'What are those {things}',
+                    'What are those']
 
         Parameters:
         utterance_template - The template the utterances are created from
@@ -90,22 +159,11 @@ class UtterMore:
         # Turns {...} into {{...}} for literalize the curlies
         template = re.sub(r'\{[\w]+\}', lambda x: '{' + x.group(0) + '}', template)
 
-        # Create dictionary mapping where the above occur to the occurance
-        all_curlies = chain(double_curlies, or_curlies)
-        index_dict = {curly.start(1): curly.group(1) for curly in all_curlies}
-
-        processed_curlies = []
-        for ind in sorted(index_dict.keys()):
-            curly = index_dict[ind]
-            # Double curlies are either single curlies or nothing
-            if curly.startswith('{{'):
-                processed_curlies.append([curly[1:-1], ''])
-            # These are a choice of the words separated by the pip
-            elif curly.startswith('('):
-                processed_curlies.append(curly[1:-1].split('|'))
-
-        # Fill in the template with every combination, removing excess whitespace
-        return [' '.join(template.format(*edit).split()) for edit in product(*processed_curlies)]
+        # Creates ordered list of curlies based on their appearance in template
+        ordered_curlies = self._order_curlies(double_curlies, or_curlies)
+    
+        # Fills in template based on logic given by utterance template
+        return self._fill_in_template(template, ordered_curlies)
 
     def add_utterance_template(self, utterance_template):
         """
