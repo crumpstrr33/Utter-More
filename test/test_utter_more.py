@@ -2,10 +2,11 @@ import filecmp
 from inspect import getsourcefile
 import os.path as path, sys
 cur_dir = path.dirname(path.abspath(getsourcefile(lambda: 0)))
-sys.path.insert(0, path.join(cur_dir[:cur_dir.rfind(path.sep)], 'src'))
+sys.path.insert(0, path.join(cur_dir[:cur_dir.rfind(path.sep)], 'utter_more'))
 
 import pytest
 
+print(sys.path)
 from utter_more import UtterMore
 sys.path.pop(0)
 
