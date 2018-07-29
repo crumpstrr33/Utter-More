@@ -209,10 +209,16 @@ class UtterMore:
             raise Exception("File type '{}' is not supported.".format(ftype_or))
 
         # Open file and add every utterance
-        with open(full_path, 'w') as f:
+        with open(full_path, 'w', newline='') as f:
             if written_as == 'txt':
+                first_line = True
                 for utterance in chain.from_iterable(self.utterances):
-                    f.write('{}\n'.format(utterance.strip()))
+                    # To write '\n'-separated but without one at start or end
+                    if first_line:
+                        first_line = False
+                        f.write('{}'.format(utterance.strip()))
+                    else:
+                        f.write('\n{}'.format(utterance.strip()))
             elif written_as == 'csv':
                 csv_writer = writer(f)
                 csv_writer.writerow(chain.from_iterable(self.utterances))
