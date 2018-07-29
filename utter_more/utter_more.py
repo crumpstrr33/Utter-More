@@ -1,6 +1,5 @@
 from itertools import product, chain
 from csv import writer
-from sys import argv
 from os import path
 import re
 
@@ -257,6 +256,7 @@ class UtterMore:
 
 
 if __name__ == "__main__":
+    from sys import argv
     utter_more = UtterMore(*argv[1:])
     utter_more.iter_build_utterances()
 

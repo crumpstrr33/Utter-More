@@ -6,7 +6,6 @@ sys.path.insert(0, path.join(cur_dir[:cur_dir.rfind(path.sep)], 'utter_more'))
 
 import pytest
 
-print(sys.path)
 from utter_more import UtterMore
 sys.path.pop(0)
 
