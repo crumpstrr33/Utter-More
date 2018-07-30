@@ -5,10 +5,12 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 with open('utter_more/__init__.py', 'r') as f:
-    version = re.findall(r'__version__ = \'(.*)\'', f.read())[0]
+    setup_file = f.read()
+version = re.findall(r'__version__ = \'(.*)\'', setup_file)[0]
+name = re.findall(r'__name__ = \'(.*)\'', setup_file)[0]
 
 setup(
-    name='utter-more',
+    name=name,
     version=version,
     author='Jacob Scott',
     author_email='jscott12009@gmail.com',
