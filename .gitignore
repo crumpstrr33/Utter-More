@@ -1,3 +1,4 @@
+# Directories
 __pycache__
 .cache
 .pytest_cache
@@ -5,4 +6,8 @@ dist
 build
 *.egg-info
 
+# Conda directory for executables/yaml
+utter-more
+
+# Files
 *.pyc
