@@ -5,6 +5,7 @@ __pycache__
 dist
 build
 *.egg-info
+conda_uploading
 
 # Conda directory for executables/yaml
 utter-more
