@@ -41,7 +41,10 @@ class UtterMore:
                               self.iter_build_utterances which will save them
                               in self.utterances
         """
-        self.utterance_templates = list(utterance_templates)
+        # Handle a combination of lists and strings being passed
+        self.utterance_templates = list(chain.from_iterable(
+            [[template] if isinstance(template, str) else template
+            for template in utterance_templates]))
         self.utterances = []
 
     def iter_build_utterances(self):
@@ -104,8 +107,8 @@ class UtterMore:
                 # Don't add this edit to utterances if it has a follower that
                 # isn't in the masters set
                 if found_follower and found_follower[0] not in masters:
-                   skip_edit = True
-                   continue
+                    skip_edit = True
+                    continue
 
             # If all good, add it!
             if not skip_edit:
@@ -115,7 +118,6 @@ class UtterMore:
                 utterances.append(' '.join(template.format(*cleaned_edit).split()))
 
         return utterances
-
 
     def build_utterances(self, utterance_template):
         """
@@ -160,7 +162,7 @@ class UtterMore:
 
         # Creates ordered list of curlies based on their appearance in template
         ordered_curlies = self._order_curlies(double_curlies, or_curlies)
-    
+
         # Fills in template based on logic given by utterance template
         return self._fill_in_template(template, ordered_curlies)
 
