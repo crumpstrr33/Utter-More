@@ -24,7 +24,7 @@ There are two options currently:
 ### Running the Code
 Now with the formatting down, lets create some templates for the utterances. Something like:
 ```
-"What is that {{descriptor}} (photo|picture) (of|from)"
+"What (is*s|are*p) (that^s|those^p) {{descriptor}} (photo|picture)(^s|s^p) (of|from)"
 ```
 and
 ```
