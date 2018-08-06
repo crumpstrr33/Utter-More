@@ -16,7 +16,7 @@ conda install -c crumpstrr33 utter-more
 ## Creating Utterances
 Below are some examples to show its functionality.
 ### Formatting
-There are two options currently:
+You can use the following in your templates:
 1) OR statement `(a|b|c|...)` - Used if you want to allow multiple interchangeable words. For example, if `photo`, `picture` and `painting` are interchangeable in your utterances, then write `(photo|picture|painting)` in the place where it would be. The number of words to OR is arbitrary and single curly keywords like `{intent_slot}` can be used in this.
 3) Conditional OR statement `(a*tag1|b) (c^tag1|d)` - Used if you want the appearance of a phrase in an OR statement to be dependent on another phrase. Here, `a` is the master and `c` is the follower; utterances with `c` will only appear if it also contains `a`. Another functionality of this is as follows. If you have `(It*s|They*p) (is^s|are^p) (close^s|far^p)`, `is` and `close` will only show if `It` also shows and, conversely, `are` and `far` will only show if `They` shows. This is how you can do a conditional AND with this function.
 2) Optional Intent Slot `{{slot}}` - Used if the existence of an intent slot in your utterance is optional. For example, if you have an optional adverb you may write `I {adverb} love it` or just `I love it`. Instead you can write `I {{adverb}} love it` to capture both.
