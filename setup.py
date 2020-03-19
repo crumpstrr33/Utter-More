@@ -1,10 +1,11 @@
 from setuptools import setup, find_packages
+from os import path
 import re
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-with open('utter_more/__init__.py', 'r') as f:
+with open(path.join('utter_more', '__init__.py'), 'r') as f:
     setup_file = f.read()
 version = re.findall(r'__version__ = \'(.*)\'', setup_file)[0]
 name = re.findall(r'__name__ = \'(.*)\'', setup_file)[0]

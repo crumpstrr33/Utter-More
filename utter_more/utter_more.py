@@ -13,13 +13,23 @@ class UtterMore:
         flexible. So this will automatically creates all the utterances you want
         based on (a) given utterance template(s).
 
-        There are two ways to format a template and they are as follows:
+        There are three ways to format a template and they are as follows:
 
+        (a|b|c|...) - [OR] Used if you want to allow multiple interchangeable
+            words. For example, if photo, picture and painting are
+            interchangeable in your utterances, then write
+            (photo|picture|painting) in the place where it would be. The number
+            of words to OR is arbitrary and single curly keywords like
+            {intent_slot} can be used in this.
         (a*1|b*2) (c^1|d^2) - [CONDITIONAL OR] The * defines a master with a tag
             of whatever follows the * while the ^ defines a follower of the tag
             of whatever follows the ^. So utterances with a word tagged with
             ^sample will only be returned if the utterance also has a word
             tagged with *sample. The above will display 'a c' OR 'b d'.
+        {{slot}} - [OPTIONAL INTENT SLOT] Used if the existence of an intent
+            slot in your utterance is optional. For example, if you have an
+            optional adverb you may write I {adverb} love it or just I love it.
+            Instead you can write I {{adverb}} love it to capture both.
 
         For example, the template
         
@@ -27,9 +37,9 @@ class UtterMore:
         will return the following utterances:
 
                     ['What is that {things}',
-                    'What is that',
-                    'What are those {things}',
-                    'What are those']
+                     'What is that',
+                     'What are those {things}',
+                     'What are those']
 
         An arbitrary number of utterance templates can be passed to the class.
         Or utterance templates can be passed as a solo argument to
@@ -53,7 +63,7 @@ class UtterMore:
         given in the initialization (in self.utterance_templates) and stores
         the resulting utterances in self.utterances as a two-dimensional list
         where each list element is a list of all the utterances for a single
-        template
+        template.
         """
         for utterance_template in self.utterance_templates:
             self.utterances.append(self.build_utterances(utterance_template))
@@ -62,7 +72,7 @@ class UtterMore:
     def _order_curlies(*curlies):
         """
         Orders the curlies in a list based on where they should appear in the
-        template and prepares it for adding to template
+        template and prepares it for adding to template.
         """
         # Create dictionary mapping where the above occur to the occurance
         all_curlies = chain.from_iterable(curlies)
@@ -157,7 +167,7 @@ class UtterMore:
         #             "What {} {} {} {{place}}?"
         # Finds the above keywords and replaces with {} for formatting
         template = re.sub(r'{{[^{}]*}}|\([^()]*\)', '{}', utterance_template)
-        # Turns {...} into {{...}} for literalize the curlies
+        # Turns {...} into {{...}} to literalize the curlies
         template = re.sub(r'\{[\w]+\}', lambda x: '{' + x.group(0) + '}', template)
 
         # Creates ordered list of curlies based on their appearance in template
@@ -168,7 +178,7 @@ class UtterMore:
 
     def add_utterance_template(self, utterance_template):
         """
-        Adds another utterance template to the current list of them
+        Adds another utterance template to the current list of them.
 
         Parameters:
         utterance_template - Template to add to current list of templates
@@ -245,7 +255,7 @@ class UtterMore:
         Paramters:
         fpath - Path to the file with the templates
         sep - (default '\n') The separator for each template. If each template
-              is on a new line, then use default.
+              is on a new line, then use default
         """
         # Read in data
         with open(fpath, 'r') as f:
