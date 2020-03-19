@@ -1,7 +1,7 @@
 [![Travis](https://img.shields.io/travis/crumpstrr33/Utter-More/master.svg?label=Travis%20CI)](https://travis-ci.org/crumpstrr33/Utter-More)
 
 # Utter More
-To customize Amazon's Alexa, you make what is called a skill. Do do something in the skill, you make an intent. To run the intent, you make an utterance. When that utterance is uttered, the intent is run. Since language is complex, there may be many different ways to say the same thing and you may want Alexa to pick up on all of those ways. Furthermore, you may have many variables for the utterances (called intent slots). Being verbose enough to cover every case can be tedious, so this takes care of that.
+To customize Amazon's Alexa, you make what is called a skill. To do something in the skill, you make an intent. To run the intent, you make an utterance. When that utterance is uttered, the intent is run. Since language is complex, there may be many different ways to say the same thing and you may want Alexa to pick up on all of those ways. Furthermore, you may have many variables for the utterances (called intent slots). Being verbose enough to cover every case can be tedious, so this takes care of that.
 
 ## Installing Package
 Just do the classic:
@@ -16,7 +16,7 @@ conda install -c crumpstrr33 utter-more
 ## Creating Utterances
 Below are some examples to show its functionality.
 ### Formatting
-There are two options currently:
+You can use the following in your templates:
 1) OR statement `(a|b|c|...)` - Used if you want to allow multiple interchangeable words. For example, if `photo`, `picture` and `painting` are interchangeable in your utterances, then write `(photo|picture|painting)` in the place where it would be. The number of words to OR is arbitrary and single curly keywords like `{intent_slot}` can be used in this.
 3) Conditional OR statement `(a*tag1|b) (c^tag1|d)` - Used if you want the appearance of a phrase in an OR statement to be dependent on another phrase. Here, `a` is the master and `c` is the follower; utterances with `c` will only appear if it also contains `a`. Another functionality of this is as follows. If you have `(It*s|They*p) (is^s|are^p) (close^s|far^p)`, `is` and `close` will only show if `It` also shows and, conversely, `are` and `far` will only show if `They` shows. This is how you can do a conditional AND with this function.
 2) Optional Intent Slot `{{slot}}` - Used if the existence of an intent slot in your utterance is optional. For example, if you have an optional adverb you may write `I {adverb} love it` or just `I love it`. Instead you can write `I {{adverb}} love it` to capture both.
@@ -24,7 +24,7 @@ There are two options currently:
 ### Running the Code
 Now with the formatting down, lets create some templates for the utterances. Something like:
 ```
-"What is that {{descriptor}} (photo|picture) (of|from)"
+"What (is*s|are*p) (that^s|those^p) {{descriptor}} (photo|picture)(^s|s^p) (of|from)"
 ```
 and
 ```
