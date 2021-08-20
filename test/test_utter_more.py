@@ -67,6 +67,8 @@ def test_ibu_aut(global_um):
     global_um.add_utterance_template(OR_CURLY)
     global_um.iter_build_utterances()
     assert global_um.utterances == [DC_ANS, SC_ANS, OC_ANS]
+    global_um.utterance_templates.clear()
+    global_um.utterances.clear()
 
 
 @pytest.mark.parametrize('fname, saved_as, written_as', [
