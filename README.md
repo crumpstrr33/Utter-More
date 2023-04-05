@@ -2,13 +2,7 @@
 To customize Amazon's Alexa, you make what is called a skill. To do something in the skill, you make an intent. To run the intent, you make an utterance. When that utterance is uttered, the intent is run. Since language is complex, there may be many different ways to say the same thing and you may want Alexa to pick up on all of those ways. Furthermore, you may have many variables for the utterances (called intent slots). Being verbose enough to cover every case can be tedious, so this takes care of that.
 
 ## Installing Package
-Just do the classic:
-```
-pip install utter-more
-```
-Or if you're adventurous and use Conda:
-```
-conda install -c crumpstrr33 utter-more
+Currently, this package is not PyPI, so just git clone the repo
 ```
 
 ## Creating Utterances
