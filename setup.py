@@ -14,7 +14,6 @@ setup(
     name=name,
     version=version,
     author='Jacob Scott',
-    author_email='jscott12009@gmail.com',
     description='Creates utterances for Amazon\'s Alexa.',
     license='MIT',
     url='https://github.com/crumpstrr33/Utter-More',
