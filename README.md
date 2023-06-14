@@ -3,7 +3,6 @@ To customize Amazon's Alexa, you make what is called a skill. To do something in
 
 ## Installing Package
 Currently, this package is not PyPI, so just git clone the repo
-```
 
 ## Creating Utterances
 Below are some examples to show its functionality.
